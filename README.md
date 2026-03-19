@@ -1,38 +1,50 @@
-# Mnemonic Strength Analyzer
+# Crypto Security 101: Learn by Building
 
-A security tool that analyzes BIP-39 mnemonic phrases for entropy strength and provides KDF recommendations.
+> Build tools that actually teach you how crypto works under the hood.
 
-## Purpose
+## Why This Course?
 
-This tool calculates the entropy of BIP-39 mnemonic phrases and rates their cryptographic strength. It helps developers and security engineers validate that wallet seed phrases meet industry standards for entropy and provides recommendations for key derivation functions (KDFs).
+You use cryptocurrency every day — but how much do you actually understand about what's happening under the hood?
 
-## Features
+This is a hands-on course for developers who want to:
+- **Understand** how crypto wallets actually work
+- **Build** real security tools (not just use them)
+- **Learn** by doing — every project solves a real problem
 
-- **Entropy calculation** — Accurate BIP-39 entropy (128/256 bits for 12/24 words)
-- **Strength classification** — weak / moderate / strong with descriptions
-- **Cracking time estimates** — Realistic GPU cluster attack scenarios
-- **KDF recommendations** — scrypt, argon2, pbkdf2 parameters
-- **BIP-39 validation** — Validates words against official 2048-word English wordlist
-- **Language detection** — Auto-detects mnemonic language
-- **CLI interface** — Human-readable or JSON output for automation
+## What You'll Build
 
-## Installation
+| Project | Concepts Learned |
+|---------|------------------|
+| **1. Mnemonic Analyzer** | Entropy, BIP-39, randomness, seed phrases |
+| **2. Key Derivation Engine** | KDFs (scrypt, argon2, pbkdf2), password hashing |
+| **3. Wallet Validator** | Address formats, checksum validation, network prefixes |
+| **4. Transaction Signing Demo** | Elliptic curves, digital signatures, ECDSA |
 
-```bash
-# From PyPI
-pip install mnemonic-analyzer
+By the end, you'll understand why "12 random words" isn't enough — and how to build systems that are actually secure.
 
-# Or install from source
-git clone https://github.com/benjaminrhodes/mnemonic-analyzer.git
-cd mnemonic-analyzer
-pip install -e .
+## Project 1: Mnemonic Analyzer
+
+Your first tool analyzes BIP-39 seed phrases (those 12-24 word lists your wallet gives you).
+
+### What is BIP-39?
+
+When you create a crypto wallet, it generates a **mnemonic phrase** — a list of words that represents your private key. Here's how it works:
+
+```
+Random bytes (128-256 bits) → BIP-39 wordlist → Your seed phrase
 ```
 
-## Usage
+**Example:**
+```
+abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about
+```
 
-### Analyze a mnemonic phrase
+That string of words represents 128 bits of entropy. But here's the thing — most people don't understand what that actually means.
+
+### What This Tool Does
 
 ```bash
+# Analyze any mnemonic phrase
 mnemonic-analyzer analyze "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 ```
 
@@ -47,7 +59,7 @@ Output:
   Entropy:
     Bits:         128
     Checksum:      4 bits
-    Total:         132 bits
+    Total:        132 bits
 
   Strength:       MODERATE
     Acceptable for most use cases. Consider 24 words for higher security.
@@ -56,79 +68,69 @@ Output:
     1.08e+26 years
 ```
 
-### Verbose mode (detailed breakdown)
+### What You'll Learn
+
+1. **Entropy** — Why more words = more security
+2. **BIP-39** — The standard that makes wallet recovery possible
+3. **Checksums** — How the last word validates the rest
+4. **Strength classification** — What "128 bits" actually means
+
+## Installation
 
 ```bash
-mnemonic-analyzer analyze "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about" --verbose
-```
-
-### JSON output (for scripting)
-
-```bash
-mnemonic-analyzer analyze "abandon ... about" --json
-```
-
-```json
-{
-  "word_count": 12,
-  "entropy_bits": 128,
-  "checksum_bits": 4,
-  "total_bits": 132,
-  "language": "en",
-  "wordlist_valid": true,
-  "strength": "moderate",
-  "cracking_time_years": 1.08e+26,
-  "kdf_recommendations": {
-    "scrypt": { "n": 262144, "r": 8, "p": 1 },
-    "argon2": { "type": "id", "m": 65536, "t": 3, "p": 4 }
-  }
-}
-```
-
-## Understanding the Output
-
-### Entropy Bits
-
-| Words | Entropy | Checksum | Total |
-|-------|---------|----------|-------|
-| 12    | 128     | 4        | 132   |
-| 15    | 160     | 5        | 165   |
-| 18    | 192     | 6        | 198   |
-| 21    | 224     | 7        | 231   |
-| 24    | 256     | 8        | 264   |
-
-### Strength Classification
-
-- **weak** (<128 bits): Vulnerable to brute-force. Not recommended.
-- **moderate** (128 bits): Acceptable for most use cases. 24 words recommended for higher security.
-- **strong** (≥256 bits): Industry standard. Resistant to current brute-force capabilities.
-
-### Cracking Time
-
-Estimates assume a dedicated GPU cluster performing 100,000 guesses/second against a properly configured KDF (scrypt/argon2). This is conservative — many real-world attacks are slower due to memory-hard functions.
-
-## Development
-
-```bash
-# Clone and install with dev dependencies
 git clone https://github.com/benjaminrhodes/mnemonic-analyzer.git
 cd mnemonic-analyzer
-pip install -e ".[dev]"
+pip install -e .
 
-# Run tests
-pytest tests/ -v
-
-# Lint
-ruff check src/
+# Run the analyzer
+mnemonic-analyzer analyze "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 ```
 
-## Security
+## Course Roadmap
 
-- **Uses synthetic seeds only** for testing
-- **Does not store or transmit** any sensitive data
-- **Local computation only** — no network requests
-- **For educational purposes** — cryptographically secure random generation requires dedicated libraries (e.g., `secrets`, `os.urandom`)
+### Phase 1: Foundations (Complete)
+- [x] Entropy & randomness
+- [x] BIP-39 wordlists
+- [x] CLI tool basics
+
+### Phase 2: Key Derivation (In Progress)
+- [ ] Understanding KDFs
+- [ ] scrypt vs argon2 vs pbkdf2
+- [ ] Building a key derivation engine
+
+### Phase 3: Advanced
+- [ ] HD wallets (BIP-32)
+- [ ] Address generation
+- [ ] Transaction signing basics
+
+## Who Is This For?
+
+- **Developers** who use crypto but want to understand it
+- **Security professionals** who need to audit wallet implementations
+- **Curious engineers** who learn by building
+
+## Prerequisites
+
+- Basic Python knowledge
+- Familiarity with the command line
+- Curiosity about how things work
+
+## Contributing
+
+This is a learning project. Found a bug? Have a suggestion? PRs welcome.
+
+## Disclaimer
+
+⚠️ **Educational purposes only.** This code helps you learn about crypto security — don't use it to generate real wallets or handle actual cryptocurrency without understanding the full security implications.
 
 ## License
 
 MIT
+
+---
+
+**Next:** [Project 2: Building a Key Derivation Engine →](./projects/02-key-derivation.md)
+
+---
+
+Built by [Benjamin Rhodes](https://github.com/benjaminrhodes) | [Follow @basicbeny](https://twitter.com/basicbeny)
