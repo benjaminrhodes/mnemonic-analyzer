@@ -10,12 +10,15 @@ readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
 authors = [
-    {name = "Security Engineer"}
+    {name = "Benjamin Rhodes", email = "ben@basicbeny.com"}
 ]
 dependencies = [
     "click>=8.0.0",
     "rich>=13.0.0",
 ]
+
+[project.scripts]
+mnemonic-analyzer = "src.cli:cli"
 
 [project.optional-dependencies]
 dev = [

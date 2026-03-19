@@ -3,6 +3,12 @@
 import math
 from typing import Optional
 
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.wordlists import get_wordlist, get_wordlist_set
+
 
 def calculate_entropy(word_count: int) -> dict:
     """Calculate entropy based on word count.
@@ -15,7 +21,7 @@ def calculate_entropy(word_count: int) -> dict:
         raise ValueError(f"Invalid BIP-39 word count: {word_count}")
 
     entropy_bits = (word_count // 3) * 32
-    checksum_bits = word_count // 33
+    checksum_bits = word_count // 3
     total_bits = word_count * 11
 
     return {
@@ -26,8 +32,19 @@ def calculate_entropy(word_count: int) -> dict:
     }
 
 
-def validate_wordlist(words: list[str], wordlist: set[str]) -> dict:
-    """Validate that words are in the all BIP-39 wordlist."""
+def validate_wordlist(words: list[str], wordlist: Optional[set[str]] = None) -> dict:
+    """Validate that words are in the BIP-39 wordlist.
+    
+    Args:
+        words: List of mnemonic words to validate
+        wordlist: Optional custom wordlist. If not provided, uses English BIP-39.
+    
+    Returns:
+        Dict with validation results
+    """
+    if wordlist is None:
+        wordlist = get_wordlist_set("en")
+    
     invalid_words = [w for w in words if w.lower() not in wordlist]
 
     return {
@@ -37,14 +54,34 @@ def validate_wordlist(words: list[str], wordlist: set[str]) -> dict:
     }
 
 
-def detect_language(wordlist: set[str]) -> Optional[str]:
-    """Detect the language of a wordlist based on common words."""
-    common_words = {
-        "abandon": "en",
-        "about": "en",
-        "above": "en",
-        "abandon": "zh",
-        "ba": "zh",
-        "bei": "zh",
+def detect_language(words: list[str]) -> Optional[str]:
+    """Detect the language of a mnemonic phrase.
+    
+    Args:
+        words: List of mnemonic words
+    
+    Returns:
+        Language code (en, es, fr, it, ja, ko, pt, zh) or None
+    """
+    if not words:
+        return None
+    
+    first_word = words[0].lower()
+    
+    # Language indicators based on first word of each BIP-39 wordlist
+    language_indicators = {
+        "en": ["abandon", "ability", "able", "about"],
+        "es": ["ábaco", "abdomen", "abeja", "abrir"],
+        "fr": ["abaisser", "abandon", "abattre", "abriter"],
+        "it": ["abbandonare", "abbinare", "abitare", "abrogare"],
+        "pt": ["abaixo", "abandonar", "abater", "aberto"],
+        "ja": ["あいこう", "あいこく", "あいする", "あいて"],
+        "ko": ["가격", "가까이", "가계", "가정"],
+        "zh": ["的", "一", "不", "人"],
     }
-    return common_words.get(next(iter(wordlist), ""), "en")
+    
+    for lang, indicators in language_indicators.items():
+        if first_word in indicators:
+            return lang
+    
+    return "en"  # Default to English

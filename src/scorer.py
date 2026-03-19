@@ -50,15 +50,36 @@ def get_kdf_recommendations(entropy_bits: int) -> dict:
 
 
 def calculate_cracking_time(entropy_bits: int) -> dict:
-    """Estimate time to crack based on entropy."""
-    guesses_per_second = 1e10
+    """Estimate time to crack based on entropy.
+    
+    Uses realistic BIP-39 cracking rates:
+    - GPU cluster (high-end): ~10^5-10^6 guesses/sec for scrypt/argon2
+    - Single high-end GPU: ~10^4 guesses/sec
+    - CPU: ~10^2-10^3 guesses/sec
+    
+    We use conservative estimate assuming dedicated cracking hardware.
+    """
+    # Conservative: 100,000 guesses per second (good GPU cluster on KDF)
+    guesses_per_second = 1e5
 
     total_guesses = 2**entropy_bits
     seconds = total_guesses / guesses_per_second
+    
+    # Convert to human-readable time units
+    minutes = seconds / 60
+    hours = minutes / 60
+    days = hours / 24
+    years = days / 365
+    centuries = years / 100
 
     return {
         "entropy_bits": entropy_bits,
         "guesses": total_guesses,
+        "guesses_per_second": guesses_per_second,
         "seconds": seconds,
-        "years": seconds / (365 * 24 * 3600),
+        "minutes": minutes,
+        "hours": hours,
+        "days": days,
+        "years": years,
+        "centuries": centuries,
     }
